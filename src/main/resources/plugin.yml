@@ -1,0 +1,9 @@
+name: GoldBlock
+version: '${project.version}'
+main: ru.anime.goldblock.GoldBlock
+api-version: '1.16'
+commands:
+  goldblock:
+    aliases:
+      - db
+
