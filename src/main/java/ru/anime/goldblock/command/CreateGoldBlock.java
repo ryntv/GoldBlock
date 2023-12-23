@@ -139,8 +139,8 @@ public class CreateGoldBlock implements CommandExecutor {
                         RegionManager regionManager = wg.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 
                         // Удаляем зону по имени
-                        if (regionManager.hasRegion("GoldBlock")) {
-                            regionManager.removeRegion("GoldBlock");
+                        if (regionManager.hasRegion("GoldBlock" + chunk_x + "_" + chunk_z + "_" + finalY)) {
+                            regionManager.removeRegion("GoldBlock" + chunk_x + "_" + chunk_z + "_" + finalY);
                             try {
                                 regionManager.save();
                             } catch (Exception e) {

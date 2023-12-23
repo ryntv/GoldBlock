@@ -15,6 +15,10 @@ commands:
 permissions:
   goldblock.create:
     default: op
-
+depend:
+  - WorldEdit
+  - DecentHolograms
+  - WorldGuard
+  - Vault
 
 
