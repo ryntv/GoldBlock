@@ -6,19 +6,21 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import ru.anime.goldblock.command.CreateGoldBlock;
+import ru.anime.goldblock.command.CommandGoldBlock;
+import ru.anime.goldblock.goldblock.GoldBlock;
 import ru.anime.goldblock.util.Metrics;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.anime.goldblock.util.UtilColor.color;
 
-public final class GoldBlock extends JavaPlugin {
+public final class Main extends JavaPlugin {
 
-    private static GoldBlock instance;
+    private static Main instance;
 
-    public static GoldBlock getInstance(){
+    public static Main getInstance(){
         return instance;
     }
 
@@ -26,6 +28,8 @@ public final class GoldBlock extends JavaPlugin {
     private static FileConfiguration cfg;
 
     private List<Integer> a;
+
+    public static final Map<String, GoldBlock> goldBlocks = new HashMap<>();
     @Override
     public void onEnable() {
             instance = this;
@@ -41,11 +45,15 @@ public final class GoldBlock extends JavaPlugin {
         String startMessage = cfg.getString("message.startMessage");
 
         getLogger().info(startMessage);
-        getCommand("GoldBlock").setExecutor(new CreateGoldBlock());
+        CommandGoldBlock cmd = new CommandGoldBlock();
+        getCommand("GoldBlock").setExecutor(cmd);
+        getCommand("GoldBlock").setTabCompleter(cmd);
         a = cfg.getIntegerList("a");
         goldBlockPause();
 
         new Metrics(this, 20545);
+
+
     }
 
     public boolean setupEconomy(){
@@ -60,7 +68,8 @@ public final class GoldBlock extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        goldBlocks.values().forEach(GoldBlock::stop);
+        goldBlocks.clear();
         getLogger().info("GoldBlock Disabled!");
     }
 
@@ -74,7 +83,7 @@ public final class GoldBlock extends JavaPlugin {
             @Override
             public void run() {
                 if (time == 0){
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb");
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb create");
                     time = cfg.getInt("time")+cfg.getInt("timeGoldBlock");
                 }
                 if (a.contains(time)){

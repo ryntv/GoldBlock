@@ -1,6 +1,6 @@
 name: GoldBlock
 version: '${project.version}'
-main: ru.anime.goldblock.GoldBlock
+main: ru.anime.goldblock.Main
 api-version: '1.16'
 commands:
   goldblock:
@@ -13,7 +13,7 @@ commands:
     aliases:
       - ct
 permissions:
-  goldblock.create:
+  goldblock.admin:
     default: op
 depend:
   - WorldEdit
