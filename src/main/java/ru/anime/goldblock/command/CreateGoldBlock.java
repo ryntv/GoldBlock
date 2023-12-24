@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import ru.anime.goldblock.GoldBlock;
+import ru.anime.goldblock.goldblock.GetHighestBlock;
+import ru.anime.goldblock.goldblock.IsRegionEmpty;
 import ru.anime.goldblock.util.UtilColor;
 import ru.anime.goldblock.util.UtilHologram;
 
@@ -34,18 +36,16 @@ public class CreateGoldBlock implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Map<ProtectedCuboidRegion, ProtectedCuboidRegion> regionmap = new HashMap<>();
         if (!sender.hasPermission("goldblock.create")){
 
             return true;
         }
-        int GB = 1;
         Chunk randomChunk;
         int y;
         while (true) {
 
             randomChunk = getRandomChunk(Bukkit.getWorlds().get(0));
-            y = getHighestBlock(randomChunk, 8, 8);
+            y = GetHighestBlock.getHighestBlock(randomChunk, 8, 8);
             if (y != -1) {
                 // тут проверяет безопасно или нет
                 break;
@@ -54,7 +54,7 @@ public class CreateGoldBlock implements CommandExecutor {
         int chunk_x = randomChunk.getX() * 16 + 8;
         int chunk_z = randomChunk.getZ() * 16 + 8;
         Location location_goldblock = new Location(Bukkit.getWorlds().get(0), chunk_x, y + 1, chunk_z);
-        if (isRegionEmpty(20, location_goldblock)) {
+        if (IsRegionEmpty.isRegionEmpty(20, location_goldblock)) {
 
             randomChunk.getBlock(8, y + 1, 8).setType(Material.GOLD_BLOCK);
             WorldGuardPlugin worldGuard = getWorldGuard();
@@ -65,10 +65,9 @@ public class CreateGoldBlock implements CommandExecutor {
                 if (regionManager != null) {
                     int privateRadius = GoldBlock.getCfg().getInt("radiusPay");
                     // Указываем координаты приватной зоны напрямую
-                    BlockVector3 min = BlockVector3.at(chunk_x - privateRadius, (y + 1) - 5, chunk_z - privateRadius);
-                    BlockVector3 max = BlockVector3.at(chunk_x + privateRadius, (y + 1) + 5, chunk_z + privateRadius);
+                    BlockVector3 min = BlockVector3.at(chunk_x - privateRadius, (y + 1) - privateRadius, chunk_z - privateRadius);
+                    BlockVector3 max = BlockVector3.at(chunk_x + privateRadius, (y + 1) + privateRadius, chunk_z + privateRadius);
                     ProtectedCuboidRegion region = new ProtectedCuboidRegion("GoldBlock" + chunk_x + "_" + chunk_z + "_" +y, min, max);
-                    regionmap.put(region, region);
                     regionManager.addRegion(region);
                     StateFlag.State state = StateFlag.State.DENY;
                     region.setFlag(Flags.BUILD, state);
@@ -174,50 +173,7 @@ public class CreateGoldBlock implements CommandExecutor {
         return world.getChunkAt(randomX >> 4, randomZ >> 4);
     }
 
-    protected int getHighestBlock(Chunk chunk, int x, int z) {
-        List<Material> list = new ArrayList<>();
-        list.add(Material.GRASS_BLOCK);
-        list.add(Material.SAND);
-        boolean upBlockIsAir = false;
-        for (int y = 80; y > 50; y--) {
-            if (!chunk.getBlock(x, y, z).getType().isAir()) {
-                if (!list.contains(chunk.getBlock(x, y, z).getType())) {
-                    return -1;
-                }
-                if (upBlockIsAir)
-                    return y;
-                else
-                    return -1;
-            } else {
-                upBlockIsAir = true;
-            }
-        }
-        return -1;
-    }
 
-    protected boolean isRegionEmpty(int radius, @NotNull Location location) {
-        try {
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            RegionManager regions = container.get((BukkitAdapter.adapt(location.getWorld())));
-
-            Location point1 = new Location(location.getWorld(), location.getX() + radius, location.getY() + radius, location.getZ() + radius);
-            Location point2 = new Location(location.getWorld(), location.getX() - radius, location.getY() - radius, location.getZ() - radius);
-
-            ProtectedCuboidRegion region = new ProtectedCuboidRegion(UUID.randomUUID() + "_region",
-                    BlockVector3.at(point1.getX(), point1.getY(), point1.getZ()),
-                    BlockVector3.at(point2.getX(), point2.getY(), point2.getZ()));
-
-            Map<String, ProtectedRegion> rg = regions.getRegions();
-            List<ProtectedRegion> candidates = new ArrayList<>(rg.values());
-
-            List<ProtectedRegion> overlapping = region.getIntersectingRegions(candidates);
-
-            return overlapping.isEmpty();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return true;
-        }
-    }
 
     private WorldGuardPlugin getWorldGuard() {
         return (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");

@@ -7,6 +7,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import ru.anime.goldblock.command.CreateGoldBlock;
+import ru.anime.goldblock.util.Metrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public final class GoldBlock extends JavaPlugin {
         a = cfg.getIntegerList("a");
         goldBlockPause();
 
+        new Metrics(this, 20545);
     }
 
     public boolean setupEconomy(){
