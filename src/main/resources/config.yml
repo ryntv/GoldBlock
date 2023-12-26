@@ -1,5 +1,5 @@
 # Name plugin "GoldBlock"
-# Version 0.1.4
+# Version 0.1.5
 # Discord https://discord.gg/ZhfY2tKgxR
 
 message:
@@ -32,6 +32,9 @@ timeGoldBlock: 300
 
 # На каком расстояние от золотого блока игрок будет получать деньги
 radiusPay: 5
+
+# Какой тип блока будет использоваться
+materialGoldBlock: GOLD_BLOCK
 
 # Задержка между золотыми блоками (время указывать в секундах 1800 = 30 мин)
 time: 1800

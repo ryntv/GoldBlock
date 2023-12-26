@@ -49,7 +49,10 @@ public class GoldBlock {
         if (location != null) {
 
             String messagePosition = String.format(Main.getCfg().getString("message.posMessage"), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-            Bukkit.broadcastMessage(color(messagePosition));
+         //   Bukkit.broadcastMessage(color(messagePosition));
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.sendMessage(color(messagePosition));
+            }
             WGHook.createRegion(location);
             task = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::tick, 0, 20);
         } else {
@@ -62,8 +65,8 @@ public class GoldBlock {
 
     private void tick() {
         if (i > 0) {
-            if (location.getBlock().getType() != Material.GOLD_BLOCK) {
-                location.getBlock().setType(Material.GOLD_BLOCK);
+            if (location.getBlock().getType() != Material.valueOf(Main.getCfg().getString("materialGoldBlock"))) {
+                location.getBlock().setType(Material.valueOf(Main.getCfg().getString("materialGoldBlock")));
             }
             List<String> lines = Main.getCfg().getStringList("hologramLines");
             lines.replaceAll(s -> UtilColor.color(s.replace("{endtime}", Main.getFormat(i))));
