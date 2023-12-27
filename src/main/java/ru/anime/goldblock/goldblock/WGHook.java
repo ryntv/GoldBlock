@@ -60,8 +60,8 @@ public class WGHook {
                 BlockVector3 max = BlockVector3.at(location.getBlockX() + privateRadius, (location.getBlockY()) + privateRadius, location.getBlockZ() + privateRadius);
                 ProtectedCuboidRegion region = new ProtectedCuboidRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" +location.getBlockY(), min, max);
                 regionManager.addRegion(region);
-                StateFlag.State state = StateFlag.State.DENY;
-                region.setFlag(Flags.BUILD, state);
+                StateFlag.State state = StateFlag.State.ALLOW;
+                region.setFlag(Flags.PVP, state);
                 try {
                     regionManager.save();
 

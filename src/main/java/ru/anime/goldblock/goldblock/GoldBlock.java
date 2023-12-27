@@ -13,6 +13,7 @@ import ru.anime.goldblock.Main;
 import ru.anime.goldblock.util.UtilColor;
 import ru.anime.goldblock.util.UtilHologram;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -80,13 +81,19 @@ public class GoldBlock {
                 }
             }
             double count = Main.getCfg().getDouble("count");
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+
+
+
             if (!listPlayer.isEmpty()) {
                 count /= listPlayer.size();
+                String result = decimalFormat.format(count);
                 for (Player player1 : listPlayer) {
                     Main.getInstance().economy.depositPlayer(player1, count);
                     player1.sendMessage(
                             color(
-                                    String.format(Main.getCfg().getString("message.youReceived"), count)
+                                    String.format(Main.getCfg().getString("message.youReceived"), result)
                                             .replace(".0", "")
                             )
                     );
