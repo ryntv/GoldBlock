@@ -13,8 +13,17 @@ import java.util.List;
 public class LocationGenerator {
     public static int getHighestBlock(Chunk chunk, int x, int z){
         List<Material> list = new ArrayList<>();
-        list.add(Material.GRASS_BLOCK);
-        list.add(Material.SAND);
+        List<String> materialNames = Main.getCfg().getStringList("materialList");
+
+        for (String materialName : materialNames) {
+            Material material = Material.matchMaterial(materialName);
+            if (material != null) {
+                list.add(material);
+            } else {
+                break;
+            }
+        }
+
         boolean upBlockIsAir = false;
         for (int y = 80; y > 50; y--) {
             if (!chunk.getBlock(x, y, z).getType().isAir()) {

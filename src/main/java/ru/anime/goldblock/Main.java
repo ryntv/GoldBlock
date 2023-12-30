@@ -3,6 +3,7 @@ package ru.anime.goldblock;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,7 +37,6 @@ public final class Main extends JavaPlugin {
 
             if (!setupEconomy()){
                 getLogger().info("Vault не найден! Сервер будет выключен");
-                getServer().getPluginManager().disablePlugin(this);
             }
 
             saveDefaultConfig();
@@ -48,7 +48,7 @@ public final class Main extends JavaPlugin {
         CommandGoldBlock cmd = new CommandGoldBlock();
         getCommand("GoldBlock").setExecutor(cmd);
         getCommand("GoldBlock").setTabCompleter(cmd);
-        a = cfg.getIntegerList("a");
+        a = cfg.getIntegerList("reportMessage");
         goldBlockPause();
 
         new Metrics(this, 20545);
@@ -87,7 +87,9 @@ public final class Main extends JavaPlugin {
                     time = cfg.getInt("time")+cfg.getInt("timeGoldBlock");
                 }
                 if (a.contains(time)){
-                    Bukkit.broadcastMessage(color(String.format(cfg.getString("message.startMessage"), getFormat(time))));
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(color(String.format(cfg.getString("message.startMessage"), getFormat(time))));
+                    }
                 }
                 time--;
             }

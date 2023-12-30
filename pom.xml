@@ -6,7 +6,7 @@
 
   <groupId>ru.anime</groupId>
   <artifactId>GoldBlock</artifactId>
-  <version>0.1.6</version>
+  <version>0.1.7.1</version>
   <packaging>jar</packaging>
 
   <name>GoldBlock</name>
@@ -67,6 +67,10 @@
           <id>sk89q-repo</id>
           <url>https://maven.enginehub.org/repo/</url>
       </repository>
+      <repository>
+          <id>rosewood-repo</id>
+          <url>https://repo.rosewooddev.io/repository/public/</url>
+      </repository>
 
   </repositories>
 
@@ -93,6 +97,12 @@
           <groupId>com.github.decentsoftware-eu</groupId>
           <artifactId>decentholograms</artifactId>
           <version>2.7.11</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.black_ixx</groupId>
+          <artifactId>playerpoints</artifactId>
+          <version>3.2.6</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>

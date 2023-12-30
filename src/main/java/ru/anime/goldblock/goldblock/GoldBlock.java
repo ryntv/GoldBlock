@@ -1,23 +1,26 @@
 package ru.anime.goldblock.goldblock;
 
+import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import ru.anime.goldblock.Main;
-import ru.anime.goldblock.util.UtilColor;
 import ru.anime.goldblock.util.UtilHologram;
+import org.black_ixx.playerpoints.PlayerPointsAPI;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import static org.bukkit.Bukkit.getLogger;
+import static org.bukkit.Bukkit.getServer;
 import static ru.anime.goldblock.util.UtilColor.color;
 
 public class GoldBlock {
@@ -70,7 +73,7 @@ public class GoldBlock {
                 location.getBlock().setType(Material.valueOf(Main.getCfg().getString("materialGoldBlock")));
             }
             List<String> lines = Main.getCfg().getStringList("hologramLines");
-            lines.replaceAll(s -> UtilColor.color(s.replace("{endtime}", Main.getFormat(i))));
+            lines.replaceAll(s -> color(s.replace("{endtime}", Main.getFormat(i))));
             UtilHologram.createOrUpdateHologram(lines, location.clone().add(offsets), name);
             int radiusPay = Main.getCfg().getInt("radiusPay");
             List<Player> listPlayer = new ArrayList<>();
@@ -90,13 +93,29 @@ public class GoldBlock {
                 count /= listPlayer.size();
                 String result = decimalFormat.format(count);
                 for (Player player1 : listPlayer) {
-                    Main.getInstance().economy.depositPlayer(player1, count);
-                    player1.sendMessage(
-                            color(
-                                    String.format(Main.getCfg().getString("message.youReceived"), result)
-                                            .replace(".0", "")
-                            )
-                    );
+                    if (Objects.equals(Main.getCfg().getString("economy"), "Vault")){
+                        Main.getInstance().economy.depositPlayer(player1, count);
+                        player1.sendMessage(
+                                color(
+                                        String.format(Main.getCfg().getString("message.youReceived"), result)
+                                                .replace(".0", "")
+                                )
+                        );
+                    } else if (Objects.equals(Main.getCfg().getString("economy"), "PlayerPoint")) {
+                        PlayerPoints playerPoints = (PlayerPoints) getServer().getPluginManager().getPlugin("PlayerPoints");
+                        assert playerPoints != null;
+                        PlayerPointsAPI pointsAPI = playerPoints.getAPI();
+                        UUID playerUUID = player1.getUniqueId();
+                        int payCount = (int) Math.round(count);
+                        pointsAPI.give(playerUUID, payCount);
+                        player1.sendMessage(
+                                color(
+                                        String.format(Main.getCfg().getString("message.youReceived"), result)
+                                                .replace(".0", "")
+                                )
+                        );
+                    }
+
                 }
             }
 
