@@ -25,7 +25,7 @@ public class LocationGenerator {
         }
 
         boolean upBlockIsAir = false;
-        for (int y = 80; y > 50; y--) {
+        for (int y = Main.getCfg().getInt("height.max"); y > Main.getCfg().getInt("height.min"); y--) {
             if (!chunk.getBlock(x, y, z).getType().isAir()) {
                 if (!list.contains(chunk.getBlock(x, y, z).getType())) {
                     return -1;

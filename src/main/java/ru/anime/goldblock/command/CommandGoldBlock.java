@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.anime.goldblock.Main;
+import ru.anime.goldblock.goldblock.GeneratorGoldBlock;
 import ru.anime.goldblock.goldblock.GoldBlock;
 
 import java.util.ArrayList;
@@ -18,6 +19,15 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+       if(args[0].equals("generated")){
+           if(sender instanceof Player player){
+                sender.sendMessage("Команда только для консоли!");
+           } else {
+               GeneratorGoldBlock tryBlock = new GeneratorGoldBlock(Bukkit.getWorlds().get(0));
+               tryBlock.start();
+           }
+       }
         if (!sender.hasPermission("goldblock.admin")) {
 
             return true;

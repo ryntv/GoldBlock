@@ -6,6 +6,9 @@ commands:
   goldblock:
     aliases:
       - gb
+  console:
+    aliases:
+      - console
   searchentity:
     aliases:
       - se

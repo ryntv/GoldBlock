@@ -2,12 +2,14 @@ package ru.anime.goldblock;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import ru.anime.goldblock.command.CommandGoldBlock;
+import ru.anime.goldblock.goldblock.GeneratorGoldBlock;
 import ru.anime.goldblock.goldblock.GoldBlock;
 import ru.anime.goldblock.util.Metrics;
 
@@ -31,12 +33,13 @@ public final class Main extends JavaPlugin {
     private List<Integer> a;
 
     public static final Map<String, GoldBlock> goldBlocks = new HashMap<>();
+
     @Override
     public void onEnable() {
             instance = this;
 
             if (!setupEconomy()){
-                getLogger().info("Vault не найден! Сервер будет выключен");
+                getLogger().info("Vault не найден!");
             }
 
             saveDefaultConfig();
@@ -80,11 +83,18 @@ public final class Main extends JavaPlugin {
     private void goldBlockPause() {
         new BukkitRunnable(){
             int time = cfg.getInt("time");
+            boolean first = true;
             @Override
             public void run() {
                 if (time == 0){
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb create");
                     time = cfg.getInt("time")+cfg.getInt("timeGoldBlock");
+                    GeneratorGoldBlock.close();
+                    first = true;
+                }
+                if(time == 300 && first){
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb generated");
+                    first = false;
                 }
                 if (a.contains(time)){
                     for (Player player : Bukkit.getOnlinePlayers()) {

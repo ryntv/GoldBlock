@@ -6,7 +6,7 @@
 
   <groupId>ru.anime</groupId>
   <artifactId>GoldBlock</artifactId>
-  <version>0.1.7.1</version>
+  <version>0.1.8</version>
   <packaging>jar</packaging>
 
   <name>GoldBlock</name>

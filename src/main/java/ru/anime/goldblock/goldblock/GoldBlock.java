@@ -49,11 +49,29 @@ public class GoldBlock {
         name = UUID.randomUUID().toString();
     }
     private void tryStart(){
+
+        GeneratorGoldBlock.listGoldBlocks.forEach((key, value) -> {
+            location = value;
+        });
+        if (location != null) {
+
+            String messagePosition = String.format(Main.getCfg().getString("message.posMessage"), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.sendMessage(color(messagePosition));
+            }
+            WGHook.createRegion(location);
+            task = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::tick, 0, 20);
+            GeneratorGoldBlock.listGoldBlocks.clear();
+        } else {
+            fallbackMethod();
+        }
+    }
+
+    private void fallbackMethod(){
         location = LocationGenerator.getRandomLocation(world);
         if (location != null) {
 
             String messagePosition = String.format(Main.getCfg().getString("message.posMessage"), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-         //   Bukkit.broadcastMessage(color(messagePosition));
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.sendMessage(color(messagePosition));
             }
@@ -62,8 +80,10 @@ public class GoldBlock {
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), this::tryStart);
         }
+
     }
     public void start() {
+
         Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), this::tryStart);
     }
 
@@ -85,7 +105,6 @@ public class GoldBlock {
             }
             double count = Main.getCfg().getDouble("count");
             DecimalFormat decimalFormat = new DecimalFormat("#.00");
-
 
 
 
