@@ -117,7 +117,7 @@ public class GoldBlock {
                         player1.sendMessage(
                                 color(
                                         String.format(Main.getCfg().getString("message.youReceived"), result)
-                                                .replace(".0", "")
+                                                .replace(",00", "")
                                 )
                         );
                     } else if (Objects.equals(Main.getCfg().getString("economy"), "PlayerPoint")) {
@@ -130,7 +130,7 @@ public class GoldBlock {
                         player1.sendMessage(
                                 color(
                                         String.format(Main.getCfg().getString("message.youReceived"), result)
-                                                .replace(".0", "")
+                                                .replace(",00", "")
                                 )
                         );
                     }
