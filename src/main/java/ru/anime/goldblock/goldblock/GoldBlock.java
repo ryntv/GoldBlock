@@ -39,7 +39,7 @@ public class GoldBlock {
 
 
     public GoldBlock(World world) {
-        this.world = world;
+        this.world = Bukkit.getWorld(Main.getCfg().getString("world"));
         i = Main.getCfg().getInt("timeGoldBlock");
         offsets = new Vector(
                 Main.getCfg().getDouble("hologramOffset.x"),
@@ -49,7 +49,6 @@ public class GoldBlock {
         name = UUID.randomUUID().toString();
     }
     private void tryStart(){
-
         GeneratorGoldBlock.listGoldBlocks.forEach((key, value) -> {
             location = value;
         });
@@ -155,6 +154,7 @@ public class GoldBlock {
         task.cancel();
         WGHook.removeRegion(location);
         UtilHologram.remove(name);
+        Main.goldBlocks.remove(name);
     }
 
     public String getName() {

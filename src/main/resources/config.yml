@@ -1,5 +1,5 @@
 # Name plugin "GoldBlock"
-# Version 0.1.8.1
+# Version 0.1.9
 # Discord https://discord.gg/ZhfY2tKgxR
 
 message:
@@ -14,6 +14,9 @@ message:
   youReceived: "&6&lВы получили: &a%s&6&l$"
 
   startMessage: "&e&lДо золотого блока: %s"
+
+# Выбрать в каком мире будет появляться золотой блок
+world: 'world'
 
   # Сколько будет награда за золотой блок (награда делится на всех кто находится возле золотого блока)
 count: 100

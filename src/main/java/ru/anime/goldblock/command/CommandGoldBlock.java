@@ -20,14 +20,6 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-       if(args[0].equals("generated")){
-           if(sender instanceof Player player){
-                sender.sendMessage("Команда только для консоли!");
-           } else {
-               GeneratorGoldBlock tryBlock = new GeneratorGoldBlock(Bukkit.getWorlds().get(0));
-               tryBlock.start();
-           }
-       }
         if (!sender.hasPermission("goldblock.admin")) {
 
             return true;
@@ -36,8 +28,18 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
             sender.sendMessage("Укажите аргумент");
             return true;
         }
+
+       if(args[0].equals("generated")){
+           if(sender instanceof Player player){
+                sender.sendMessage("Команда только для консоли!");
+           } else {
+               GeneratorGoldBlock tryBlock = new GeneratorGoldBlock(Bukkit.getWorld(Main.getCfg().getString("world")));
+               tryBlock.start();
+           }
+       }
+
         if (args[0].equals("create")){
-            GoldBlock block = new GoldBlock(Bukkit.getWorlds().get(0));
+            GoldBlock block = new GoldBlock(Bukkit.getWorld(Main.getCfg().getString("world")));
             block.start();
             Main.goldBlocks.put(block.getName(), block);
         }
