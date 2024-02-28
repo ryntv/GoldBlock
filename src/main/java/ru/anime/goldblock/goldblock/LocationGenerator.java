@@ -4,30 +4,19 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import ru.anime.goldblock.Main;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LocationGenerator {
-    public static int getHighestBlock(Chunk chunk, int x, int z){
-        List<Material> list = new ArrayList<>();
-        List<String> materialNames = Main.getCfg().getStringList("materialList");
+    public static int getHighestBlock(Chunk chunk, int x, int z, List<Material> materialList, int heightMin, int heightMax){
 
-        for (String materialName : materialNames) {
-            Material material = Material.matchMaterial(materialName);
-            if (material != null) {
-                list.add(material);
-            } else {
-                break;
-            }
-        }
 
         boolean upBlockIsAir = false;
-        for (int y = Main.getCfg().getInt("height.max"); y > Main.getCfg().getInt("height.min"); y--) {
+        for (int y = heightMax; y > heightMin; y--) {
             if (!chunk.getBlock(x, y, z).getType().isAir()) {
-                if (!list.contains(chunk.getBlock(x, y, z).getType())) {
+                if (!materialList.contains(chunk.getBlock(x, y, z).getType())) {
                     return -1;
                 }
                 if (upBlockIsAir)
@@ -40,21 +29,26 @@ public class LocationGenerator {
         }
         return -1;
     }
-    public static Chunk getRandomChunk(World world) {
-        int randomX = (int) (Main.getCfg().getInt("center.x") + (int) ((Math.random() * 2 - 1) * Main.getCfg().getInt("radius.x")));
-        int randomZ = (int) (Main.getCfg().getInt("center.z") + (int) ((Math.random() * 2 - 1) * Main.getCfg().getInt("radius.z")));
+    public static Chunk getRandomChunk(World world, int centerX, int centerZ, int radius) {
+        // Генерация случайных координат в пределах радиуса
+        int randomX = (int) (Math.random() * (2 * radius + 1) - radius);
+        int randomZ = (int) (Math.random() * (2 * radius + 1) - radius);
 
-        return world.getChunkAt(randomX >> 4, randomZ >> 4);
+        // Получение чанка по случайным координатам
+        int chunkX = (centerX + randomX) >> 4;
+        int chunkZ = (centerZ + randomZ) >> 4;
+        return world.getChunkAt(chunkX, chunkZ);
     }
     @Nullable
-    public static Location getRandomLocation(World world){
-        Chunk chunk = getRandomChunk(world);
-        int y = getHighestBlock(chunk, 8 ,8);
+    public static Location getRandomLocation(World world, int centerX, int centerZ, List<Material> materialList, int heightMin, int heightMax, int radius, int radiusPay){
+        Chunk chunk = getRandomChunk(world, centerX, centerZ, radius);
+        int y = getHighestBlock(chunk, 8 ,8, materialList, heightMin, heightMax);
         if (y != -1){
             Location l = chunk.getBlock(8, y+1 ,8).getLocation();
-            if (WGHook.isRegionEmpty(Main.getCfg().getInt("radiusPay"), l)){
+             if (WGHook.isRegionEmpty(radiusPay, l)){
                 return l;
             }
+
         }
         return null;
     }

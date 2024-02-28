@@ -2,15 +2,15 @@ package ru.anime.goldblock;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import ru.anime.goldblock.command.CommandGoldBlock;
-import ru.anime.goldblock.goldblock.GeneratorGoldBlock;
 import ru.anime.goldblock.goldblock.GoldBlock;
+import ru.anime.goldblock.goldblock.LoadGoldBlock;
 import ru.anime.goldblock.util.Metrics;
 
 import java.util.HashMap;
@@ -20,19 +20,13 @@ import java.util.Map;
 import static ru.anime.goldblock.util.UtilColor.color;
 
 public final class Main extends JavaPlugin {
-
     private static Main instance;
-
     public static Main getInstance(){
         return instance;
     }
-
     public Economy economy;
     private static FileConfiguration cfg;
-
-    private List<Integer> a;
-
-    public static final Map<String, GoldBlock> goldBlocks = new HashMap<>();
+    public static Map<String, GoldBlock> goldBlocks = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -45,16 +39,10 @@ public final class Main extends JavaPlugin {
             saveDefaultConfig();
 
         cfg = getConfig();
-        String startMessage = cfg.getString("message.startMessage");
-
-        getLogger().info(startMessage);
-        CommandGoldBlock cmd = new CommandGoldBlock();
-        getCommand("GoldBlock").setExecutor(cmd);
-        getCommand("GoldBlock").setTabCompleter(cmd);
-        a = cfg.getIntegerList("reportMessage");
-        goldBlockPause();
-
+        LoadGoldBlock.loadGoldBlock(cfg);
         new Metrics(this, 20545);
+        getCommand("goldblock").setExecutor(new CommandGoldBlock());
+        Bukkit.getScheduler().runTaskTimer(this, this::tick, 0, 20);
 
 
     }
@@ -81,30 +69,10 @@ public final class Main extends JavaPlugin {
     }
 
     private void goldBlockPause() {
-        new BukkitRunnable(){
-            int time = cfg.getInt("time");
-            boolean first = true;
-            @Override
-            public void run() {
-                if (time == 0){
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb create");
-                    time = cfg.getInt("time")+cfg.getInt("timeGoldBlock");
-                    GeneratorGoldBlock.close();
-                    first = true;
-                }
-                if(time == 300 && first){
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gb generated");
-                    first = false;
-                }
-                if (a.contains(time)){
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.sendMessage(color(String.format(cfg.getString("message.startMessage"), getFormat(time))));
-                    }
-                }
-                time--;
-            }
-        }.runTaskTimer(this , 0 ,20);
 
+    }
+    private void tick() {
+        goldBlocks.values().forEach(GoldBlock::tick);
     }
 
     public static String getFormat(int Sec) {

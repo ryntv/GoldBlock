@@ -6,7 +6,7 @@
 
   <groupId>ru.anime</groupId>
   <artifactId>GoldBlock</artifactId>
-  <version>0.1.9</version>
+  <version>0.2</version>
   <packaging>jar</packaging>
 
   <name>GoldBlock</name>
@@ -105,5 +105,13 @@
           <version>3.2.6</version>
           <scope>provided</scope>
       </dependency>
+      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+      <dependency>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+          <version>1.18.30</version>
+          <scope>provided</scope>
+      </dependency>
+
   </dependencies>
 </project>

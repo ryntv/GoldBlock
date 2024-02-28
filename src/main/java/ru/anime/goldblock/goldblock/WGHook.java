@@ -10,10 +10,10 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.bukkit.Location;
 import org.bukkit.World;
-import ru.anime.goldblock.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.UUID;
 import static org.bukkit.Bukkit.getServer;
 
 public class WGHook {
+
     public static boolean isRegionEmpty(int radius, @NotNull Location location) {
         try {
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -47,18 +48,18 @@ public class WGHook {
         }
 
     }
-    public static void createRegion(Location location){
+
+    public static void createRegion(Location location, int privateRadius) {
         WorldGuardPlugin worldGuard = getWorldGuard();
         if (worldGuard != null) {
             World world = location.getWorld();
             com.sk89q.worldguard.WorldGuard wg = com.sk89q.worldguard.WorldGuard.getInstance();
             RegionManager regionManager = wg.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
             if (regionManager != null) {
-                int privateRadius = Main.getCfg().getInt("radiusPay");
                 // Указываем координаты приватной зоны напрямую
                 BlockVector3 min = BlockVector3.at(location.getBlockX() - privateRadius, (location.getBlockY()) - privateRadius, location.getBlockZ() - privateRadius);
                 BlockVector3 max = BlockVector3.at(location.getBlockX() + privateRadius, (location.getBlockY()) + privateRadius, location.getBlockZ() + privateRadius);
-                ProtectedCuboidRegion region = new ProtectedCuboidRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" +location.getBlockY(), min, max);
+                ProtectedCuboidRegion region = new ProtectedCuboidRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" + location.getBlockY(), min, max);
                 regionManager.addRegion(region);
                 StateFlag.State state = StateFlag.State.ALLOW;
                 region.setFlag(Flags.PVP, state);
@@ -75,14 +76,14 @@ public class WGHook {
         }
     }
 
-    public static void removeRegion(Location location){
+    public static void removeRegion(Location location) {
         World world = location.getWorld(); // Получаем первый загруженный мир, измените это при необходимости
         com.sk89q.worldguard.WorldGuard wg = com.sk89q.worldguard.WorldGuard.getInstance();
         RegionManager regionManager = wg.getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 
         // Удаляем зону по имени
-        if (regionManager.hasRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" +location.getBlockY())) {
-            regionManager.removeRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" +location.getBlockY());
+        if (regionManager.hasRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" + location.getBlockY())) {
+            regionManager.removeRegion("GoldBlock" + location.getBlockX() + "_" + location.getBlockZ() + "_" + location.getBlockY());
             try {
                 regionManager.save();
             } catch (Exception e) {
@@ -93,6 +94,7 @@ public class WGHook {
 
 
     }
+
     private static WorldGuardPlugin getWorldGuard() {
         return (WorldGuardPlugin) getServer().getPluginManager().getPlugin("WorldGuard");
     }
