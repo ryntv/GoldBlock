@@ -92,12 +92,12 @@ public class LoadGoldBlockCommand {
 
             List<Integer> reportMessage = goldBlockSection.getIntegerList("reportMessage");
             List<Location> locationList = new ArrayList<>();
+            String name = UUID.randomUUID().toString();
 
-            GoldBlock goldBlock = new GoldBlock(key, world, economy, blockMovementType, radius, heightMax, heightMin,
+            GoldBlock goldBlock = new GoldBlock(name, world, economy, blockMovementType, radius, heightMax, heightMin,
                     centerX, centerZ, posGoldBlock, timeGoldBlock, minPlayers, count, shareCount, radiusPay, materialGoldBlock,
-                    materialList, time, time, hologramLines, hologramOffset, message, reportMessage, null, locationList,0, timeGoldBlock);
+                    materialList, time, 0, hologramLines, hologramOffset, message, reportMessage, null, locationList,0, timeGoldBlock);
 
-            String name = key + goldBlocks.size();
             goldBlocks.put(name, goldBlock);
             Main.getInstance().getLogger().info("Загружен золотой блок: " + name);
         }

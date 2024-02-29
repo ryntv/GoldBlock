@@ -22,6 +22,7 @@ import static ru.anime.goldblock.Main.goldBlocks;
 
 
 public class CommandGoldBlock implements CommandExecutor, TabCompleter {
+   static List<String> list = new ArrayList<>();
 
 
     @Override
@@ -33,6 +34,9 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
         if (args.length == 0){
             sender.sendMessage("Укажите аргумент");
             return true;
+        }
+        if (args[0].equals("update")){
+            sender.sendMessage(String.valueOf(goldBlocks.size()));
         }
 
         if (args[0].equals("create")) {
@@ -83,19 +87,31 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!sender.hasPermission("goldblock.admin")) {
-
             return null;
         }
-        if (args.length <= 1) {
-            return List.of(
-                    "create",
-                    "stop",
-                    "tp"
-            );
-        } else {
-            return new ArrayList<>(Main.goldBlocks.keySet());
+
+        List<String> completions = new ArrayList<>();
+
+        if (args.length == 1) {
+            completions.add("create");
+            completions.add("stop");
+            completions.add("tp");
+        } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("stop")) {
+                completions.addAll(goldBlocks.keySet());
+            } else if (args[0].equalsIgnoreCase("create")) {
+                for (Map.Entry<String, GoldBlock> entry : goldBlocks.entrySet()) {
+                    String key = entry.getKey();
+                    GoldBlock value = entry.getValue();
+                    if (value.getIsDefaultGold() == 1){
+                        list.add(key);
+                    }
+                }
+                completions.addAll(list);
+            }
         }
 
+        return completions;
     }
 }
 

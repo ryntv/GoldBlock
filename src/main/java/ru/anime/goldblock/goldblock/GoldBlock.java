@@ -1,6 +1,6 @@
 package ru.anime.goldblock.goldblock;
 
-
+import lombok.Getter;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
@@ -51,6 +51,7 @@ public class GoldBlock {
     private final List<Integer> reportMessage;
     private BukkitTask task;
     private List<Location> generateLocationList;
+    @Getter
     private final Integer isDefaultGold;
     private Integer runTimeUpdate;
   //  private final   Map<Integer, List<String>> commandManager; - будущий функционал
@@ -96,7 +97,6 @@ public class GoldBlock {
                 Location location = new Location(Bukkit.getWorld(world), posGoldBlock.getX(), posGoldBlock.getY(), posGoldBlock.getZ());
                 generateLocationList.add(location);
                 WGHook.createRegion(location, radiusPay);
-
             }
             if (!generateLocationList.isEmpty()){
                 createGoldBlock();
@@ -114,7 +114,7 @@ public class GoldBlock {
         } else if(timeUpdate.equals(time) && Bukkit.getOnlinePlayers().size() < minPlayer) {
           //  System.out.println("Не достаточно игроков для начала золотого блока!");
         } else {
-            if (reportMessage.contains(timeUpdate)){
+            if (reportMessage.contains(timeUpdate) && isDefaultGold == 1){
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.sendMessage(color(String.format(message.get("startMessage"), getFormat(timeUpdate))));
                 }
@@ -232,7 +232,9 @@ public class GoldBlock {
         return null;
     }
 
-
+    public Integer getIsDefaultGold() {
+        return isDefaultGold;
+    }
 
     /*  public Map<Integer, List<String>> getCommandManager() {
         return commandManager;

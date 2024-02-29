@@ -1,5 +1,5 @@
 # Name plugin "GoldBlock"
-# Version 0.2
+# Version 0.2.2
 # Discord https://discord.gg/ZhfY2tKgxR
 
 GoldBlocks:
@@ -11,7 +11,7 @@ GoldBlocks:
     # Выбрать какая экономика будет использоваться (Vault, PlayerPoint)
     economy: 'Vault'
     # Выбрать будет ли золотой блок появляться рандомно или в определённом месте
-    blockMovementType: 'static' # (static - золотой блок будет появляться в определённом месте,
+    blockMovementType: 'random' # (static - золотой блок будет появляться в определённом месте,
                          #random - появляется в радиусе от центра поиска золотого блока)
     # Радиус где может появиться золотой блок
     radius: 2000
