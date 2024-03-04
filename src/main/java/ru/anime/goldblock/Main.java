@@ -2,55 +2,64 @@ package ru.anime.goldblock;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import ru.anime.goldblock.command.CommandGoldBlock;
 import ru.anime.goldblock.goldblock.GoldBlock;
 import ru.anime.goldblock.goldblock.LoadGoldBlock;
+import ru.anime.goldblock.util.FormatTime;
+import ru.anime.goldblock.util.GoldBlockPlaceholderExpansion;
 import ru.anime.goldblock.util.Metrics;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static ru.anime.goldblock.util.UtilColor.color;
 
 public final class Main extends JavaPlugin {
     private static Main instance;
-    public static Main getInstance(){
+
+    public static Main getInstance() {
         return instance;
     }
+
     public Economy economy;
     private static FileConfiguration cfg;
     public static Map<String, GoldBlock> goldBlocks = new HashMap<>();
+    private GoldBlockPlaceholderExpansion placeholderExpansion;
 
     @Override
     public void onEnable() {
-            instance = this;
+        instance = this;
 
-            if (!setupEconomy()){
-                getLogger().info("Vault не найден!");
-            }
+        if (!setupEconomy()) {
+            getLogger().info("Vault не найден!");
+        }
 
-            saveDefaultConfig();
+        saveDefaultConfig();
 
         cfg = getConfig();
         LoadGoldBlock.loadGoldBlock(cfg);
         new Metrics(this, 20545);
         getCommand("goldblock").setExecutor(new CommandGoldBlock());
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            placeholderExpansion = new GoldBlockPlaceholderExpansion(this);
+            placeholderExpansion.register();
+        } else {
+            getLogger().warning("PlaceholderAPI не обнаружен! Некоторые функции могут быть недоступны.");
+        }
+
         Bukkit.getScheduler().runTaskTimer(this, this::tick, 0, 20);
 
 
     }
 
-    public boolean setupEconomy(){
+    public boolean setupEconomy() {
         RegisteredServiceProvider<Economy> registeredServiceProvider = getServer().getServicesManager().getRegistration(Economy.class);
 
-        if(registeredServiceProvider == null){
+        if (registeredServiceProvider == null) {
             return false;
         }
         economy = registeredServiceProvider.getProvider();
@@ -62,6 +71,19 @@ public final class Main extends JavaPlugin {
         goldBlocks.values().forEach(GoldBlock::stop);
         goldBlocks.clear();
         getLogger().info("GoldBlock Disabled!");
+        if (placeholderExpansion != null) {
+            placeholderExpansion.unregister();
+        }
+    }
+    public void reload(){
+        goldBlocks.values().forEach(GoldBlock::stop);
+        goldBlocks.clear();
+
+        reloadConfig();
+        cfg = getConfig();
+
+        LoadGoldBlock.loadGoldBlock(cfg);
+        getLogger().info("GoldBlock Reload!");
     }
 
     public static FileConfiguration getCfg() {
@@ -71,6 +93,7 @@ public final class Main extends JavaPlugin {
     private void goldBlockPause() {
 
     }
+
     private void tick() {
         goldBlocks.values().forEach(GoldBlock::tick);
     }
@@ -79,10 +102,16 @@ public final class Main extends JavaPlugin {
         int hour = Sec / 3600;//3600
         int min = Sec % 3600 / 60;
         int sec = Sec % 60;
-        return String.format("%02d:%02d:%02d", hour, min, sec);
+        if (Objects.equals(cfg.getString("TypeFormat"), "integer")) {
+            return FormatTime.integerFormat(hour, min, sec);
+        } else if (Objects.equals(cfg.getString("TypeFormat"), "string")) {
+            return FormatTime.stringFormat(hour, min, sec);
+        }
+        return FormatTime.integerFormat(hour, min, sec);
+
     }
 
-        // Повторить задержки через 5 минут
-      //  Bukkit.getScheduler().runTaskLater(this, this::goldBlockPause, 20 * 60 * 5L); // 20 тиков * 60 секунд * 5 минут
+    // Повторить задержки через 5 минут
+    //  Bukkit.getScheduler().runTaskLater(this, this::goldBlockPause, 20 * 60 * 5L); // 20 тиков * 60 секунд * 5 минут
 
 }

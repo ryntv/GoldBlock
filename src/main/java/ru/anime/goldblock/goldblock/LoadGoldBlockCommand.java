@@ -89,6 +89,7 @@ public class LoadGoldBlockCommand {
             message.put("endMessage", goldBlockSection.getString("message.endMessage"));
             message.put("youReceived", goldBlockSection.getString("message.youReceived"));
             message.put("startMessage", goldBlockSection.getString("message.startMessage"));
+            message.put("endTime", goldBlockSection.getString("message.endTime"));
 
             List<Integer> reportMessage = goldBlockSection.getIntegerList("reportMessage");
             List<Location> locationList = new ArrayList<>();

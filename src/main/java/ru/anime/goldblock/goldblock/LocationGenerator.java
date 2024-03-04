@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LocationGenerator {

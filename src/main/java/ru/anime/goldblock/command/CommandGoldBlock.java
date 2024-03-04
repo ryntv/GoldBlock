@@ -1,9 +1,5 @@
 package ru.anime.goldblock.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,13 +8,14 @@ import org.bukkit.entity.Player;
 import ru.anime.goldblock.Main;
 import ru.anime.goldblock.goldblock.GoldBlock;
 import ru.anime.goldblock.goldblock.LoadGoldBlockCommand;
-import ru.anime.goldblock.goldblock.LocationGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static ru.anime.goldblock.Main.goldBlocks;
+import static ru.anime.goldblock.util.UtilColor.color;
 
 
 public class CommandGoldBlock implements CommandExecutor, TabCompleter {
@@ -35,8 +32,9 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
             sender.sendMessage("Укажите аргумент");
             return true;
         }
-        if (args[0].equals("update")){
-            sender.sendMessage(String.valueOf(goldBlocks.size()));
+        if (args[0].equals("reload")){
+            Main.getInstance().reload();
+            sender.sendMessage(color(Objects.requireNonNull(Main.getCfg().getString("messageReload"))));
         }
 
         if (args[0].equals("create")) {
@@ -96,6 +94,7 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
             completions.add("create");
             completions.add("stop");
             completions.add("tp");
+            completions.add("reload");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("stop")) {
                 completions.addAll(goldBlocks.keySet());
@@ -103,13 +102,16 @@ public class CommandGoldBlock implements CommandExecutor, TabCompleter {
                 for (Map.Entry<String, GoldBlock> entry : goldBlocks.entrySet()) {
                     String key = entry.getKey();
                     GoldBlock value = entry.getValue();
-                    if (value.getIsDefaultGold() == 1){
-                        list.add(key);
+                    if (value.getIsDefaultGold() == 1) {
+                        completions.add(key);
                     }
                 }
-                completions.addAll(list);
             }
         }
+
+        // Фильтруем результаты по введенному тексту
+        String input = args[args.length - 1].toLowerCase();
+        completions.removeIf(option -> !option.toLowerCase().startsWith(input));
 
         return completions;
     }

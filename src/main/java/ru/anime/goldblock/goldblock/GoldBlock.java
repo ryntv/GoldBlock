@@ -1,6 +1,5 @@
 package ru.anime.goldblock.goldblock;
 
-import lombok.Getter;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
@@ -51,7 +50,6 @@ public class GoldBlock {
     private final List<Integer> reportMessage;
     private BukkitTask task;
     private List<Location> generateLocationList;
-    @Getter
     private final Integer isDefaultGold;
     private Integer runTimeUpdate;
   //  private final   Map<Integer, List<String>> commandManager; - будущий функционал
@@ -152,7 +150,7 @@ public class GoldBlock {
 
     }
     private void tickGoldBlock(){
-        if (runTimeUpdate > 0){
+        if (runTimeUpdate >= 0){
             Location location = generateLocationList.get(0);
             location.getBlock().setType(materialGoldBlock);
                 List<String> lines = new ArrayList<>(hologramLines);
@@ -200,8 +198,8 @@ public class GoldBlock {
                     }
             }
         } else {
+            runTimeUpdate = timeGoldBlock+1;
             stop();
-            runTimeUpdate = timeGoldBlock;
         }
         runTimeUpdate--;
     }
@@ -211,7 +209,9 @@ public class GoldBlock {
         }
         if (!generateLocationList.isEmpty()) {
             generateLocationList.get(0).getBlock().setType(Material.AIR);
-            task.cancel();
+            if (task != null) {
+                task.cancel();
+            }
             WGHook.removeRegion(generateLocationList.get(0));
             String name = generateLocationList.get(0).getBlockX() + "_" + generateLocationList.get(0).getBlockY() + "_" + generateLocationList.get(0).getBlockZ();
             UtilHologram.remove(name);
@@ -236,6 +236,21 @@ public class GoldBlock {
         return isDefaultGold;
     }
 
+    public Integer getRunTimeUpdate() { // время работы золотого блока
+        return runTimeUpdate;
+    }
+
+    public Integer getTimeUpdate() { // через сколько появится золотой блок
+        return timeUpdate;
+    }
+
+    public Integer getTimeGoldBlock() {
+        return timeGoldBlock;
+    }
+
+    public Map<String, String> getMessage() {
+        return message;
+    }
     /*  public Map<Integer, List<String>> getCommandManager() {
         return commandManager;
     }
