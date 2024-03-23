@@ -26,7 +26,11 @@ public class GoldBlockPlaceholderExpansion extends PlaceholderExpansion {
     @Override
     public String getAuthor() {
         // Возвращает имя автора плейсхолдера
-        return "Ваше имя";
+        return "Anime";
+    }
+    @Override
+    public boolean persist() {
+        return true;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class GoldBlockPlaceholderExpansion extends PlaceholderExpansion {
 
             GoldBlock goldBlock = goldBlocks.get(key);
             if (goldBlock != null) {
-                return color(String.format(goldBlock.getMessage().get("startMessage"), getFormat(goldBlock.getTimeUpdate())));
+                return color(String.format(getFormat(goldBlock.getTimeUpdate())));
             } else {
                 return "Золотой блок не обнаружен!";
             }
@@ -72,9 +76,9 @@ public class GoldBlockPlaceholderExpansion extends PlaceholderExpansion {
             if (goldBlock != null) {
                 if (goldBlock.getLocation() != null && goldBlock.getRunTimeUpdate() < goldBlock.getTimeGoldBlock()) {
                     Location location = goldBlock.getLocation();
-                    return color(String.format(goldBlock.getMessage().get("posMessage"), location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+                    return "x:" + location.getBlockX() + " y:" + location.getBlockY() + " z:" + location.getBlockZ();
                 } else {
-                    return "Золотой блок ещё не появился!";
+                    return color(Main.getCfg().getString("absentGoldBlock"));
                 }
 
             }
@@ -84,9 +88,9 @@ public class GoldBlockPlaceholderExpansion extends PlaceholderExpansion {
             GoldBlock goldBlock = goldBlocks.get(key);
             if (goldBlock != null){
                 if (goldBlock.getRunTimeUpdate() < goldBlock.getTimeGoldBlock() && goldBlock.getRunTimeUpdate() > 0){
-                    return color(String.format(goldBlock.getMessage().get("endTime"), getFormat(goldBlock.getRunTimeUpdate())));
+                    return color(String.format(getFormat(goldBlock.getRunTimeUpdate())));
                 } else {
-                    return "Золотой блок ещё не появился!";
+                    return color(Main.getCfg().getString("absentGoldBlock"));
                 }
             }
         }
