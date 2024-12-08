@@ -84,20 +84,30 @@ public class LoadGoldBlockCommand {
                     goldBlockSection.getDouble("hologramOffset.z")
             );
 
-            Map<String, String> message = new HashMap<>();
-            message.put("posMessage", goldBlockSection.getString("message.posMessage"));
-            message.put("endMessage", goldBlockSection.getString("message.endMessage"));
-            message.put("youReceived", goldBlockSection.getString("message.youReceived"));
-            message.put("startMessage", goldBlockSection.getString("message.startMessage"));
-            message.put("endTime", goldBlockSection.getString("message.endTime"));
+            Map<String, List<String>> message = new HashMap<>();
+            message.put("posMessage", goldBlockSection.getStringList("message.posMessage"));
+            message.put("endMessage", goldBlockSection.getStringList("message.endMessage"));
+            message.put("youReceived", goldBlockSection.getStringList("message.youReceived"));
+            message.put("startMessage", goldBlockSection.getStringList("message.startMessage"));
+            message.put("endTime", goldBlockSection.getStringList("message.endTime"));
 
             List<Integer> reportMessage = goldBlockSection.getIntegerList("reportMessage");
             List<Location> locationList = new ArrayList<>();
             String name = UUID.randomUUID().toString();
 
+            Map<Integer, List<String>> commandManager = new HashMap<>();
+            ConfigurationSection commandManagerSection = goldBlockSection.getConfigurationSection("commandManager");
+            if (commandManagerSection != null) {
+                for (String timeKey : commandManagerSection.getKeys(false)) {
+                    time = Integer.parseInt(timeKey);
+                    List<String> commands = commandManagerSection.getStringList(timeKey);
+                    commandManager.put(time, commands);
+                }
+            }
+
             GoldBlock goldBlock = new GoldBlock(name, world, economy, blockMovementType, radius, heightMax, heightMin,
                     centerX, centerZ, posGoldBlock, timeGoldBlock, minPlayers, count, shareCount, radiusPay, materialGoldBlock,
-                    materialList, time, 0, hologramLines, hologramOffset, message, reportMessage, null, locationList,0, timeGoldBlock);
+                    materialList, time, 0, hologramLines, hologramOffset, message, reportMessage, null, locationList,0, timeGoldBlock, commandManager);
 
             goldBlocks.put(name, goldBlock);
             Main.getInstance().getLogger().info("Загружен золотой блок: " + name);

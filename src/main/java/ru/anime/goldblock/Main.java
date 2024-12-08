@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static ru.anime.goldblock.util.UtilColor.color;
-
 public final class Main extends JavaPlugin {
     private static Main instance;
 

@@ -70,11 +70,16 @@ GoldBlocks:
       y: 1.7
       z: 0.5
     message:
-      posMessage: '&eКоординаты золотого блока x: %s y: %s z: %s'
-      endMessage: "&bЗолотой блок закончился"
-      youReceived: "&6&lВы получили: &a%s&6&l$"
-      startMessage: "&e&lДо золотого блока: %s"
-      endTime: "&e&lДо конца золотого блока: %s"
+      posMessage:
+      - '&eКоординаты золотого блока x: %s y: %s z: %s'
+      endMessage:
+      - "&bЗолотой блок закончился"
+      youReceived:
+      - "&6&lВы получили: &a%s&6&l$"
+      startMessage:
+      - "&e&lДо золотого блока: %s"
+      endTime:
+      - "&e&lДо конца золотого блока: %s"
     # Когда выводить сообщение когда будет золотой блок (ниже указан пример)
     reportMessage:
       - 1800 # До золотого блока 00:30:00
@@ -126,11 +131,16 @@ GoldBlocks:
       y: 1.7
       z: 0.5
     message:
-      posMessage: '&eКоординаты золотого блока x: %s y: %s z: %s'
-      endMessage: "&bЗолотой блок закончился"
-      youReceived: "&6&lВы получили: &a%s&6&l$"
-      startMessage: "&e&lДо золотого блока: %s"
-      endTime: "&e&lДо конца золотого блока: %s"
+      posMessage:
+      - '&eКоординаты золотого блока x: %s y: %s z: %s'
+      endMessage:
+      - "&bЗолотой блок закончился"
+      youReceived:
+      - "&6&lВы получили: &a%s&6&l$"
+      startMessage:
+      - "&e&lДо золотого блока: %s"
+      endTime:
+      - "&e&lДо конца золотого блока: %s"
     reportMessage:
       - 1800 # До золотого блока 00:30:00
       - 600 # До золотого блока 00:10:00
@@ -146,11 +156,18 @@ GoldBlocks:
       - 3
       - 2
       - 1
-
-
-    # Функционал ниже появится в будущем!!!
     # Здесь вы можете настроить бонусы, эффекты и т.д. (если до конца золотого блока остаётся 60 секунд вы можете увеличить количество монет, добавить дебафы)
-  # commandManager:
-  #   60:
-  #     - " give count 100"
-  #     - " effect <любой эффект>"
+    # [PLAYER] cmd %player%
+    # [CONSOLE] cmd %player%
+    # [SOUND] ITEM_TRIDENT_THUNDER -volume:1.0f -pitch:1.0f
+    # [EFFECT] BLINDNESS -duration:1 -strength:0
+    # [TITLE] Title;Subtitle -fadeIn:1 -stay:3 -fadeOut:1
+    # [MESSAGE] Сообщение
+    # [ACTIONBAR] Текст
+    # [COUNT] Изменение суммы которую будет получать игрок
+    #
+
+    commandManager:
+      280:
+        - "[COUNT] 1000"
+        - "[CONSOLE] say Hello %player%"

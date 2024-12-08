@@ -7,6 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import ru.anime.goldblock.Main;
@@ -21,6 +24,7 @@ import java.util.UUID;
 import static org.bukkit.Bukkit.getServer;
 import static ru.anime.goldblock.Main.getFormat;
 import static ru.anime.goldblock.Main.goldBlocks;
+import static ru.anime.goldblock.goldblock.Actions.ActionsCount;
 import static ru.anime.goldblock.util.UtilColor.color;
 
 
@@ -37,7 +41,7 @@ public class GoldBlock {
     private final Vector posGoldBlock;
     private final Integer timeGoldBlock;
     private final Integer minPlayer;
-    private final Integer count;
+    private Integer count;
     private final Boolean shareCount;
     private final Integer radiusPay;
     private final Material materialGoldBlock;
@@ -46,19 +50,19 @@ public class GoldBlock {
     private Integer timeUpdate;
     private final List<String> hologramLines;
     private final Vector hologramOffset;
-    private final Map<String, String> message;
+    private final Map<String, List<String>> message;
     private final List<Integer> reportMessage;
     private BukkitTask task;
     private List<Location> generateLocationList;
     private final Integer isDefaultGold;
     private Integer runTimeUpdate;
-  //  private final   Map<Integer, List<String>> commandManager; - будущий функционал
+    private final Map<Integer, List<String>> commandManager;
 
     public GoldBlock(String id, String world, String economy, String blockMovementType, Integer radius, Integer heightMax,
                      Integer heightMin, Integer centerX, Integer centerZ, Vector posGoldBlock, Integer timeGoldBlock,
                      Integer minPlayer, Integer count, Boolean shareCount, Integer radiusPay, Material materialGoldBlock,
                      List<Material> materialList, Integer time, Integer timeUpdate, List<String> hologramLines,
-                     Vector hologramOffset, Map<String, String> message, List<Integer> reportMessage, BukkitTask task,List<Location> generateLocationList, Integer isDefaultGold, Integer runTimeUpdate) {
+                     Vector hologramOffset, Map<String, List<String>> message, List<Integer> reportMessage, BukkitTask task, List<Location> generateLocationList, Integer isDefaultGold, Integer runTimeUpdate, Map<Integer, List<String>> commandManager) {
         this.id = id;
         this.world = world;
         this.economy = economy;
@@ -86,7 +90,7 @@ public class GoldBlock {
         this.generateLocationList = generateLocationList;
         this.isDefaultGold = isDefaultGold;
         this.runTimeUpdate = runTimeUpdate;
-       // this.commandManager = commandManager;
+        this.commandManager = commandManager;
     }
 
     public void tick() {
@@ -114,7 +118,10 @@ public class GoldBlock {
         } else {
             if (reportMessage.contains(timeUpdate) && isDefaultGold == 1){
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.sendMessage(color(String.format(message.get("startMessage"), getFormat(timeUpdate))));
+                    List<String> startMessage = message.get("startMessage");
+                    for (String msg : startMessage) {
+                        player.sendMessage(color(String.format(msg, getFormat(timeUpdate))));
+                    }
                 }
             }
             if (timeUpdate % 10 == 0 && blockMovementType.equals("random") && generateLocationList.size() < 5){
@@ -134,9 +141,12 @@ public class GoldBlock {
                 Location location = generateLocationList.get(0);
                 if (WGHook.isRegionEmpty(radiusPay, location) || blockMovementType.equals("static")){
                     task = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::tickGoldBlock, 0, 20);
-                    String messagePosition = String.format(message.get("posMessage"), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.sendMessage(color(messagePosition));
+                        List<String> posMessage = message.get("posMessage");
+                        for (String msg : posMessage) {
+                            player.sendMessage(color(String.format(msg, location.getBlockX(), location.getBlockY(), location.getBlockZ())));
+                        }
                     }
                     if (blockMovementType.equals("random")) {
                         WGHook.createRegion(location, radiusPay);
@@ -172,28 +182,41 @@ public class GoldBlock {
                     countPay = count;
                 }
                     String result = decimalFormat.format(countPay);
-                    for (Player player1 : playerList){
+                    for (Player player : playerList){
                         if (economy.equals("Vault")){
-                            Main.getInstance().economy.depositPlayer(player1, count);
-                            player1.sendMessage(
-                                    color(
-                                            String.format(message.get("youReceived"), result)
-                                                    .replace(",00", "")
-                                    )
-                            );
+                            if (commandManager.containsKey(runTimeUpdate)) {
+                                List<String> actions = commandManager.get(runTimeUpdate);
+                                for (String action : actions) {
+                                    String actionWithTime = action.replace("%time%", String.valueOf(runTimeUpdate));
+                                    Actions.Actions(player, actionWithTime);
+                                    if (ActionsCount==0) {
+                                        ActionsCount = count;
+                                    } else {
+                                        count = ActionsCount;
+                                    }
+
+                                }
+                            }
+
+                            Main.getInstance().economy.depositPlayer(player, count);
+
+                            List<String> youReceived = message.get("youReceived");
+                            for (String msg : youReceived) {
+                                player.sendMessage(color(String.format(msg, result)
+                                        .replace(",00", "")));
+                            }
                         } else if(economy.equals("PlayerPoint")){
                             PlayerPoints playerPoints = (PlayerPoints) getServer().getPluginManager().getPlugin("PlayerPoints");
                             assert playerPoints != null;
                             PlayerPointsAPI pointsAPI = playerPoints.getAPI();
-                            UUID playerUUID = player1.getUniqueId();
+                            UUID playerUUID = player.getUniqueId();
                             int payCount = (int) Math.round(count);
                             pointsAPI.give(playerUUID, payCount);
-                            player1.sendMessage(
-                                    color(
-                                            String.format(message.get("youReceived"), result)
-                                                    .replace(",00", "")
-                                    )
-                            );
+                            List<String> youReceived = message.get("youReceived");
+                            for (String msg : youReceived) {
+                                player.sendMessage(color(String.format(msg, result)
+                                        .replace(",00", "")));
+                            }
                         }
                     }
             }
@@ -205,7 +228,10 @@ public class GoldBlock {
     }
     public void stop(){
         for (Player player : Bukkit.getOnlinePlayers()){
-            player.sendMessage(color(message.get("endMessage")));
+            List<String> endMessage = message.get("endMessage");
+            for (String msg : endMessage) {
+                player.sendMessage(color(String.format(msg)));
+            }
         }
         if (!generateLocationList.isEmpty()) {
             generateLocationList.get(0).getBlock().setType(Material.AIR);
@@ -248,7 +274,7 @@ public class GoldBlock {
         return timeGoldBlock;
     }
 
-    public Map<String, String> getMessage() {
+    public Map<String, List<String>> getMessage() {
         return message;
     }
     /*  public Map<Integer, List<String>> getCommandManager() {
@@ -256,6 +282,9 @@ public class GoldBlock {
     }
 
    */
+
+
+
 }
 
 

@@ -51,12 +51,6 @@ public class GoldBlockPlaceholderExpansion extends PlaceholderExpansion {
         if (player == null) {
             return "";
         }
-
-        // Пример обработки плейсхолдера
-        if (identifier.equals("example")) {
-            return String.valueOf(Main.goldBlocks.size());
-        }
-
         // Обработка плейсхолдера с префиксом "timeGoldBlock_"
         if (identifier.startsWith("toStart_")) {
             // Извлекаем значение из идентификатора

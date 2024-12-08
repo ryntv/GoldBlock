@@ -1,6 +1,9 @@
 name: GoldBlock
 version: '${project.version}'
 main: ru.anime.goldblock.Main
+authors:
+  - Anime (ryntv5)
+  - MrJetby
 api-version: '1.16'
 commands:
   goldblock:
